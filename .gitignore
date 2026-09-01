@@ -1,7 +1,21 @@
-.venv/
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IDE ###
+.idea/
+*.iml
+*.iws
+.classpath
+.project
+.settings/
+bin/
+.vscode/
+
+### Ambiente ###
+# Credenciais e chaves ficam so na maquina. Nunca commitar.
 .env
-__pycache__/
-.pytest_cache/
-*.pyc
-certs/*.key
-certs/*.crt
+.env.*
+!.env.example
+*.log
