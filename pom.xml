@@ -75,11 +75,26 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Banco em memoria: valida o mapeamento JPA e as queries JPQL sem
+             depender de um Postgres de pe. -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Slice @WebMvcTest / @AutoConfigureMockMvc: no Spring Boot 4 as fatias
              de teste foram divididas por tecnologia e nao vem no starter-test. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Slice @DataJpaTest, pelo mesmo motivo do webmvc-test acima. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-data-jpa-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -153,18 +153,7 @@ public class AnaliseQueryService {
 
     /** Exige exatamente um identificador: politico OU partido. */
     private Alvo resolverAlvo(ConsultaRequest request) {
-        boolean temPolitico = request.tituloEleitoral() != null
-                && !request.tituloEleitoral().isBlank();
-        boolean temPartido = request.nrPartido() != null;
-
-        if (temPolitico == temPartido) {
-            throw new IllegalArgumentException(
-                    "Informe 'tituloEleitoral' (politico) ou 'nrPartido' (partido) -- "
-                            + "exatamente um dos dois.");
-        }
-        return temPolitico
-                ? Alvo.de(catalogo.carregarPolitico(request.tituloEleitoral()))
-                : Alvo.de(catalogo.carregarPartido(request.nrPartido()));
+        return Alvo.resolver(request, catalogo);
     }
 
     private static String normalizarSentimento(String sentimento) {

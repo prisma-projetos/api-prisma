@@ -1,5 +1,6 @@
 package br.com.prisma.api_prisma.service;
 
+import br.com.prisma.api_prisma.dto.ConsultaRequest;
 import br.com.prisma.api_prisma.model.Partido;
 import br.com.prisma.api_prisma.model.Politico;
 import br.com.prisma.api_prisma.repository.ClassificacaoRepository;
@@ -31,6 +32,27 @@ public record Alvo(String tipo, String identificador, String nome,
                 partido.getSigla(),
                 null,
                 partido.getNumero());
+    }
+
+    /**
+     * Resolve o alvo a partir do corpo da requisicao, exigindo exatamente um
+     * identificador. Vive aqui, e nao em cada servico, para que toda consulta
+     * -- sentimento, mencoes ou analise de materia -- recuse os dois
+     * identificadores juntos com a mesma mensagem.
+     */
+    static Alvo resolver(ConsultaRequest request, CatalogoQueryService catalogo) {
+        boolean temPolitico = request.tituloEleitoral() != null
+                && !request.tituloEleitoral().isBlank();
+        boolean temPartido = request.nrPartido() != null;
+
+        if (temPolitico == temPartido) {
+            throw new IllegalArgumentException(
+                    "Informe 'tituloEleitoral' (politico) ou 'nrPartido' (partido) -- "
+                            + "exatamente um dos dois.");
+        }
+        return temPolitico
+                ? de(catalogo.carregarPolitico(request.tituloEleitoral()))
+                : de(catalogo.carregarPartido(request.nrPartido()));
     }
 
     /** Titulo eleitoral, ou o sentinela que desliga o filtro por politico. */
