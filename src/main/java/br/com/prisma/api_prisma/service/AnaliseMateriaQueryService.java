@@ -15,7 +15,7 @@ import br.com.prisma.api_prisma.dto.AnaliseMateriaResponse;
 import br.com.prisma.api_prisma.dto.AnalisePorEixoResponse;
 import br.com.prisma.api_prisma.dto.AnalisePorEixoResponse.EixoContagem;
 import br.com.prisma.api_prisma.dto.ConsultaRequest;
-import br.com.prisma.api_prisma.dto.SentimentoResumoResponse.Proveniencia;
+import br.com.prisma.api_prisma.dto.Proveniencia;
 import br.com.prisma.api_prisma.repository.AnaliseMateriaRepository;
 import br.com.prisma.api_prisma.repository.AnaliseMateriaRepository.ContagemPorEixo;
 

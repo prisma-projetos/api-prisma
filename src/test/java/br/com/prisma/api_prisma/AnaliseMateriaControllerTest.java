@@ -23,7 +23,7 @@ import br.com.prisma.api_prisma.controller.AnaliseMateriaController;
 import br.com.prisma.api_prisma.dto.AnaliseMateriaResponse;
 import br.com.prisma.api_prisma.dto.AnalisePorEixoResponse;
 import br.com.prisma.api_prisma.dto.AnalisePorEixoResponse.EixoContagem;
-import br.com.prisma.api_prisma.dto.SentimentoResumoResponse.Proveniencia;
+import br.com.prisma.api_prisma.dto.Proveniencia;
 import br.com.prisma.api_prisma.security.ApiKeyFilter;
 import br.com.prisma.api_prisma.security.SecurityConfig;
 import br.com.prisma.api_prisma.service.AnaliseMateriaQueryService;

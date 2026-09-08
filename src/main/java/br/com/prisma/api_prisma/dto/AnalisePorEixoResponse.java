@@ -21,7 +21,7 @@ public record AnalisePorEixoResponse(
         long semEixo,
         List<EixoContagem> eixos,
         @Schema(description = "Metodo e versao do pipeline que geraram as analises")
-        List<SentimentoResumoResponse.Proveniencia> proveniencia) {
+        List<Proveniencia> proveniencia) {
 
     @Schema(description = "Volume de um eixo")
     public record EixoContagem(String eixo, long total, double percentual) {
