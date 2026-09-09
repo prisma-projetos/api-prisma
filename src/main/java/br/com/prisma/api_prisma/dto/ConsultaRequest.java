@@ -25,9 +25,13 @@ public record ConsultaRequest(
                 example = "negativo")
         String sentimento,
 
-        @Schema(description = "Filtra por eixo tematico da materia. So vale para "
-                + "/analise/materias e /analise/por-eixo", example = "saude")
-        String eixo,
+        @Schema(description = "Filtra por tema da materia. So vale para "
+                + "/analise/materias", example = "saude")
+        String tema,
+
+        @Schema(description = "Janela mensal YYYY-MM. Em /analise/panorama, ausente "
+                + "significa a janela mais recente com material", example = "2026-08")
+        String janela,
 
         @Schema(description = "Inicio do periodo de publicacao", example = "2026-01-01")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

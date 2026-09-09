@@ -1,39 +1,54 @@
 package br.com.prisma.api_prisma.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.List;
 
-import br.com.prisma.api_prisma.model.AnaliseMateria;
+import br.com.prisma.api_prisma.model.AnaliseItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * Uma materia analisada, com o link da noticia de origem.
  *
- * <p>Carrega sempre {@code metodo} e {@code pipelineVersion}: titulo e resumo
- * podem ser saida de modelo, e nao circulam sem dizer quem os produziu.
+ * <p>Carrega sempre {@code modelo} e {@code regraAgregacao}: o resumo e saida
+ * de modelo e nao circula sem dizer quem o escreveu.
+ *
+ * <p><b>Nao ha titulo.</b> O analyser nao persiste titulo de materia -- ver
+ * {@link AnaliseItem}. Um campo sempre nulo seria pior que a ausencia dele,
+ * porque prometeria ao frontend um dado que nunca vai chegar. Para exibir a
+ * materia, o caminho e {@code linkNoticia}.
  */
-@Schema(description = "Materia analisada, com eixo, resumo e proveniencia")
+@Schema(description = "Materia analisada, com resumo, temas e proveniencia")
 public record AnaliseMateriaResponse(
-        Integer idAnalise,
-        @Schema(description = "Recorte tematico da materia", example = "saude") String eixo,
-        String titulo,
-        @Schema(description = "Resumo da materia. Pode ser gerado por modelo -- ver metodo")
+        @Schema(description = "Id do item no analyser. E tambem o id de fonte citado "
+                + "pelo panorama", example = "art_1__politico_122418060191")
+        String itemId,
+        @Schema(description = "Id do artigo no banco do scraper (externo a este banco)")
+        Long articleId,
+        @Schema(description = "Sentimento da materia inteira. O analyser chama este "
+                + "campo de 'eixo'", example = "negativo")
+        String rotulo,
+        @Schema(description = "Resumo da materia, escrito por modelo -- ver 'modelo'. "
+                + "Nulo enquanto a materia nao foi resumida")
         String resumo,
+        @Schema(description = "Recortes tematicos da materia", example = "[\"saude\"]")
+        List<String> temas,
         String linkNoticia,
         Integer idMidia,
         String nomeMidia,
-        LocalDateTime dataPublicacao,
-        @Schema(description = "Metodo do analisador") String metodo,
-        String pipelineVersion,
-        @Schema(description = "Id do artigo no banco do scraper (externo a este banco)")
-        Long idArtigoScrape) {
+        OffsetDateTime dataPublicacao,
+        @Schema(description = "Janela mensal da materia", example = "2026-08") String janela,
+        String modelo,
+        String regraAgregacao,
+        @Schema(description = "novo, resumido ou consolidado") String status) {
 
-    public static AnaliseMateriaResponse from(AnaliseMateria a) {
-        var midia = a.getMidia();
+    public static AnaliseMateriaResponse from(AnaliseItem i, List<String> temas) {
+        var midia = i.getMidia();
         return new AnaliseMateriaResponse(
-                a.getId(), a.getEixo(), a.getTitulo(), a.getResumo(), a.getLinkNoticia(),
+                i.getId(), i.getArticleId(), i.getRotulo(), i.getResumo(), temas,
+                i.getLinkNoticia(),
                 midia != null ? midia.getId() : null,
                 midia != null ? midia.getNome() : null,
-                a.getDataPublicacao(), a.getMetodo(), a.getPipelineVersion(),
-                a.getIdArtigoScrape());
+                i.getDataPublicacao(), i.getJanela(), i.getModelo(),
+                i.getRegraAgregacao(), i.getStatus());
     }
 }

@@ -21,9 +21,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import br.com.prisma.api_prisma.controller.AnaliseMateriaController;
 import br.com.prisma.api_prisma.dto.AnaliseMateriaResponse;
-import br.com.prisma.api_prisma.dto.AnalisePorEixoResponse;
-import br.com.prisma.api_prisma.dto.AnalisePorEixoResponse.EixoContagem;
-import br.com.prisma.api_prisma.dto.Proveniencia;
+import br.com.prisma.api_prisma.dto.AnalisePorTemaResponse;
+import br.com.prisma.api_prisma.dto.AnalisePorTemaResponse.TemaContagem;
+import br.com.prisma.api_prisma.dto.PanoramaResponse;
+import br.com.prisma.api_prisma.dto.PanoramaResponse.Fonte;
+import br.com.prisma.api_prisma.dto.PanoramaResponse.PanoramaEixo;
+import br.com.prisma.api_prisma.dto.PanoramaResponse.TemaPanorama;
+import br.com.prisma.api_prisma.dto.ProvenienciaAnalise;
 import br.com.prisma.api_prisma.security.ApiKeyFilter;
 import br.com.prisma.api_prisma.security.SecurityConfig;
 import br.com.prisma.api_prisma.service.AnaliseMateriaQueryService;
@@ -50,13 +54,14 @@ class AnaliseMateriaControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    /** Titulo e resumo podem ser gerados: nunca circulam sem o metodo. */
+    /** O resumo e escrito por modelo: nunca circula sem dizer qual. */
     @Test
-    void materiaTrazSempreOMetodoQueAProduziu() throws Exception {
+    void materiaTrazSempreQuemAProduziu() throws Exception {
         var materia = new AnaliseMateriaResponse(
-                1, "saude", "Prefeitura anuncia novo hospital",
-                "Texto resumido da materia.", "https://exemplo.com/noticia",
-                7, "Diario do Vale", null, "analyser-baseline-v1", "v1", 4242L);
+                "art_4242__partido_13", 4242L, "negativo",
+                "Texto resumido da materia.", List.of("saude"),
+                "https://exemplo.com/noticia", 7, "Diario do Vale", null,
+                "2026-08", "gemma-3-27b", "eixo-por-sinal-v2", "resumido");
 
         when(service.materias(any()))
                 .thenReturn(new PageImpl<>(List.of(materia), PageRequest.of(0, 20), 1));
@@ -66,29 +71,54 @@ class AnaliseMateriaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nrPartido\":13}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].eixo").value("saude"))
-                .andExpect(jsonPath("$.content[0].metodo").value("analyser-baseline-v1"))
-                .andExpect(jsonPath("$.content[0].pipelineVersion").value("v1"));
+                .andExpect(jsonPath("$.content[0].itemId").value("art_4242__partido_13"))
+                .andExpect(jsonPath("$.content[0].temas[0]").value("saude"))
+                .andExpect(jsonPath("$.content[0].rotulo").value("negativo"))
+                .andExpect(jsonPath("$.content[0].modelo").value("gemma-3-27b"))
+                .andExpect(jsonPath("$.content[0].regraAgregacao").value("eixo-por-sinal-v2"));
     }
 
-    /** Materia sem eixo e informacao, nao lixo: aparece como grupo proprio. */
+    /** Materia sem tema e informacao, nao lixo: aparece como grupo proprio. */
     @Test
-    void porEixoExpoeAsMateriasSemEixo() throws Exception {
-        when(service.porEixo(any())).thenReturn(new AnalisePorEixoResponse(
+    void porTemaExpoeAsMateriasSemTema() throws Exception {
+        when(service.porTema(any())).thenReturn(new AnalisePorTemaResponse(
                 "partido", "13", "PT", 10, 4,
-                List.of(new EixoContagem("saude", 6, 60.0),
-                        new EixoContagem("(eixo nao atribuido)", 4, 40.0)),
-                List.of(new Proveniencia("analyser-baseline-v1", "v1", 10))));
+                List.of(new TemaContagem("saude", 6, 60.0),
+                        new TemaContagem("(tema nao atribuido)", 4, 40.0)),
+                List.of(new ProvenienciaAnalise("gemma-3-27b", "eixo-por-sinal-v2", 10))));
 
-        mockMvc.perform(get("/api/analise/por-eixo")
+        mockMvc.perform(get("/api/analise/por-tema")
                         .header(KEY_HEADER, KEY)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nrPartido\":13}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalMaterias").value(10))
-                .andExpect(jsonPath("$.semEixo").value(4))
-                .andExpect(jsonPath("$.eixos[0].eixo").value("saude"))
-                .andExpect(jsonPath("$.proveniencia[0].metodo").value("analyser-baseline-v1"));
+                .andExpect(jsonPath("$.semTema").value(4))
+                .andExpect(jsonPath("$.temas[0].tema").value("saude"))
+                .andExpect(jsonPath("$.proveniencia[0].modelo").value("gemma-3-27b"));
+    }
+
+    /** O frontend precisa da fonte navegavel, nao do id cru do analyser. */
+    @Test
+    void panoramaEntregaFontesResolvidas() throws Exception {
+        var fonte = new Fonte("art_1__partido_13", "G1", "https://g1/1", null);
+        when(service.panorama(any())).thenReturn(new PanoramaResponse(
+                "partido", "13", "PT", "2026-08",
+                List.of(new PanoramaEixo("negativo", 3, 1, "Texto consolidado.",
+                        List.of(new TemaPanorama("saude", 2, List.of(fonte))),
+                        List.of(fonte), List.of(), "gemma-3-27b", null))));
+
+        mockMvc.perform(get("/api/analise/panorama")
+                        .header(KEY_HEADER, KEY)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nrPartido\":13,\"janela\":\"2026-08\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.janela").value("2026-08"))
+                .andExpect(jsonPath("$.eixos[0].eixo").value("negativo"))
+                .andExpect(jsonPath("$.eixos[0].versao").value(3))
+                .andExpect(jsonPath("$.eixos[0].texto").value("Texto consolidado."))
+                .andExpect(jsonPath("$.eixos[0].fontes[0].veiculo").value("G1"))
+                .andExpect(jsonPath("$.eixos[0].temas[0].tema").value("saude"));
     }
 
     /** Mesma regra das outras consultas: politico OU partido, nunca os dois. */

@@ -7,12 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 
-import br.com.prisma.api_prisma.repository.AnaliseMateriaRepository;
+import br.com.prisma.api_prisma.repository.AnaliseItemRepository;
+import br.com.prisma.api_prisma.repository.PanoramaRepository;
 
 /**
- * Valida o que os testes de controller nao alcancam: se a entidade
- * {@code AnaliseMateria} mapeia contra o resto do modelo, e se as queries
- * JPQL do repositorio compilam.
+ * Valida o que os testes de controller nao alcancam: se as entidades
+ * {@code AnaliseItem} e {@code Panorama} mapeiam contra o resto do modelo, e
+ * se as queries JPQL dos repositorios compilam.
  *
  * <p><b>O que este teste cobre.</b> O Spring Data monta e valida toda
  * {@code @Query} declarada ao criar o bean do repositorio, e o Hibernate
@@ -20,6 +21,12 @@ import br.com.prisma.api_prisma.repository.AnaliseMateriaRepository;
  * Um campo inexistente, um alias errado ou um JPQL malformado derrubam o
  * contexto -- e portanto este teste -- antes de qualquer assercao. Hoje um
  * typo em {@code @Query} so apareceria na primeira chamada em producao.
+ *
+
+ * <p><b>A consulta de materias nao e coberta aqui.</b> Ela e SQL nativo, por
+ * causa do operador {@code @>} sobre {@code jsonb} que JPQL nao tem -- e
+ * consulta nativa nao e validada na subida do contexto nem roda em H2. Quem a
+ * exercita e o profile {@code dev}, contra o Postgres.
  *
  * <p><b>O que este teste NAO cobre.</b> Nao ha schema: {@code ddl-auto=none}
  * porque o H2 nao conhece {@code bpchar}, tipo do Postgres usado em
@@ -36,17 +43,22 @@ import br.com.prisma.api_prisma.repository.AnaliseMateriaRepository;
         "spring.jpa.hibernate.ddl-auto=none",
         "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect"
 })
-class AnaliseMateriaRepositoryTest {
+class AnaliseItemRepositoryTest {
 
     @Autowired
-    private AnaliseMateriaRepository analises;
+    private AnaliseItemRepository itens;
+
+    @Autowired
+    private PanoramaRepository panoramas;
 
     /**
-     * Chegar aqui ja significa que o modelo resolveu e que as tres queries
-     * declaradas em {@link AnaliseMateriaRepository} foram aceitas.
+     * Chegar aqui ja significa que o modelo resolveu e que as queries JPQL
+     * declaradas nos dois repositorios foram aceitas -- inclusive a
+     * subconsulta correlacionada que seleciona a maior versao do panorama.
      */
     @Test
     void modeloEQueriesSaoValidos() {
-        assertThat(analises).isNotNull();
+        assertThat(itens).isNotNull();
+        assertThat(panoramas).isNotNull();
     }
 }
