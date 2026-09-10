@@ -22,7 +22,7 @@ import br.com.prisma.api_prisma.dto.SentimentoPorMidiaResponse;
 import br.com.prisma.api_prisma.dto.SentimentoPorMidiaResponse.MidiaSentimento;
 import br.com.prisma.api_prisma.dto.SentimentoResumoResponse;
 import br.com.prisma.api_prisma.dto.SentimentoResumoResponse.ContagemSentimento;
-import br.com.prisma.api_prisma.dto.SentimentoResumoResponse.Proveniencia;
+import br.com.prisma.api_prisma.dto.Proveniencia;
 import br.com.prisma.api_prisma.exception.NotFoundException;
 import br.com.prisma.api_prisma.security.ApiKeyFilter;
 import br.com.prisma.api_prisma.security.SecurityConfig;
