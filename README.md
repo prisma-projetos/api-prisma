@@ -34,7 +34,6 @@ src/main/java/br/com/prisma/api_prisma/
 ├── config/
 │   └── OpenApiConfig.java           # configuração do Swagger (esquema de API Key)
 ├── controller/
-│   ├── TestController.java          # endpoint de teste (/api/test)
 │   ├── PoliticoController.java      # políticos e histórico de candidaturas
 │   ├── PartidoController.java       # partidos
 │   ├── AnaliseController.java       # sentimento agregado e menções (parágrafo)
@@ -113,7 +112,6 @@ O identificador da entidade vai **no corpo da requisição**, não no path. As c
 | `GET` | `/api/analise/materias` | Matérias analisadas: resumo, temas e rótulo |
 | `GET` | `/api/analise/por-tema` | Matérias abertas por tema (concentração de pauta) |
 | `GET` | `/api/analise/panorama` | Texto consolidado do mês, por eixo, com fontes resolvidas |
-| `GET` | `/api/test` | Verificação de disponibilidade e da chave |
 
 Os três últimos endpoints de análise leem as tabelas do `analyser-prisma`. Elas precisam existir no banco: em `dev`/`prod` (`ddl-auto=validate`) a aplicação **não sobe** enquanto o analyser não tiver aplicado `migrations/001_analyser.sql`.
 
@@ -158,7 +156,7 @@ Ou seja: `-e API_SECURITY_KEY=minha-chave` (11 caracteres) com profile `dev` **n
 
 Exemplo de chamada autenticada:
 ```bash
-curl -H "X-API-KEY: 123456" http://localhost:8080/api/test
+curl -H "X-API-KEY: 123456" http://localhost:8080/api/partidos
 ```
 
 ## ⚙️ Profiles e `application.properties`
@@ -270,9 +268,9 @@ docker compose down -v
    ```
    (No Windows: `mvnw.cmd spring-boot:run`)
 3. A API sobe em `http://localhost:8080`.
-4. Teste o endpoint protegido:
+4. Teste um endpoint protegido:
    ```bash
-   curl -H "X-API-KEY: 123456" http://localhost:8080/api/test
+   curl -H "X-API-KEY: 123456" http://localhost:8080/api/partidos
    ```
 
 ### Documentação Swagger

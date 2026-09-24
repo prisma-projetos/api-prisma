@@ -1,0 +1,1 @@
+seja direto no é solicitado sem extrapolarna criação de codigo, fazendo soemnte o necessario

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,8 +44,7 @@ class AnaliseControllerTest {
     @Test
     void exigeChaveDeApi() throws Exception {
         mockMvc.perform(get("/api/analise/sentimento")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nrPartido\":13}"))
+                        .param("nrPartido", "13"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -60,8 +58,7 @@ class AnaliseControllerTest {
 
         mockMvc.perform(get("/api/analise/sentimento")
                         .header(KEY_HEADER, KEY)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nrPartido\":13}"))
+                        .param("nrPartido", "13"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalParagrafos").value(3946))
                 .andExpect(jsonPath("$.proveniencia[0].metodo").value("lexicon-baseline-v1"))
@@ -82,8 +79,7 @@ class AnaliseControllerTest {
 
         mockMvc.perform(get("/api/analise/por-midia")
                         .header(KEY_HEADER, KEY)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"tituloEleitoral\":\"122418060191\"}"))
+                        .param("tituloEleitoral", "122418060191"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalParagrafos").value(100))
                 .andExpect(jsonPath("$.paragrafosSemVeiculo").value(60))
@@ -98,8 +94,8 @@ class AnaliseControllerTest {
 
         mockMvc.perform(get("/api/analise/sentimento")
                         .header(KEY_HEADER, KEY)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"tituloEleitoral\":\"122418060191\",\"nrPartido\":13}"))
+                        .param("tituloEleitoral", "122418060191")
+                        .param("nrPartido", "13"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400));
     }
@@ -111,8 +107,7 @@ class AnaliseControllerTest {
 
         mockMvc.perform(get("/api/analise/sentimento")
                         .header(KEY_HEADER, KEY)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nrPartido\":999}"))
+                        .param("nrPartido", "999"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404));
     }

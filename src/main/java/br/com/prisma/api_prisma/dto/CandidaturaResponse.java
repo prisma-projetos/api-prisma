@@ -19,7 +19,11 @@ public record CandidaturaResponse(
         String situacaoCandidatura,
         String resultado,
         String coligacao,
-        String federacao) {
+        String federacao,
+        @Schema(description = "URL da foto do candidato no MinIO. Nula se UF ou "
+                + "sequencial nao existirem.",
+                example = "https://api-minio.ajvale.com.br/2026/fotosCandidatos/AC/FAC10002532416_div.jpg")
+        String urlFoto) {
 
     public static CandidaturaResponse from(Candidatura c) {
         var eleicao = c.getEleicao();
@@ -33,6 +37,7 @@ public record CandidaturaResponse(
                 partido != null ? partido.getNumero() : null,
                 partido != null ? partido.getSigla() : null,
                 c.getSituacaoCandidatura(), c.getSituacaoTurno(),
-                c.getColigacao(), c.getFederacao());
+                c.getColigacao(), c.getFederacao(),
+                MinioUrls.fotoCandidato(c.getUf(), c.getSequencial()));
     }
 }
