@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /** Traduz excecoes em respostas JSON com o mesmo formato do filtro de API Key. */
 @RestControllerAdvice
@@ -91,6 +92,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleBodyIlegivel(
             HttpMessageNotReadableException ex) {
         return build(HttpStatus.BAD_REQUEST, "Corpo da requisicao invalido.");
+    }
+
+    /**
+     * Rota sem handler correspondente ({@code /api/analise/inexistente}). Sem
+     * isto, cai no {@code catch-all} de {@code Exception} abaixo e vira 500 --
+     * o Spring ja tratava isto como 404 antes de existir um
+     * {@code @ExceptionHandler(Exception.class)} na aplicacao.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleRotaInexistente(
+            NoResourceFoundException ex) {
+        return build(HttpStatus.NOT_FOUND, "Recurso nao encontrado.");
     }
 
     /**
