@@ -35,7 +35,7 @@ public record Alvo(String tipo, String identificador, String nome,
     }
 
     /**
-     * Resolve o alvo a partir do corpo da requisicao, exigindo exatamente um
+     * Resolve o alvo a partir dos parametros da consulta, exigindo exatamente um
      * identificador. Vive aqui, e nao em cada servico, para que toda consulta
      * -- sentimento, mencoes ou analise de materia -- recuse os dois
      * identificadores juntos com a mesma mensagem.

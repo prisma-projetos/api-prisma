@@ -1,8 +1,8 @@
 package br.com.prisma.api_prisma.controller;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +13,7 @@ import br.com.prisma.api_prisma.dto.PanoramaResponse;
 import br.com.prisma.api_prisma.service.AnaliseMateriaQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 /**
  * Analise no nivel da materia: resumo, tema e panorama do mes.
@@ -40,8 +41,9 @@ public class AnaliseMateriaController {
             description = "A unidade e a materia, nao o paragrafo. Aceita filtro por tema, "
                     + "por janela mensal e por periodo. O resumo e escrito por modelo -- a "
                     + "resposta sempre diz qual. Nao ha titulo: o analyser nao o persiste.")
-    public Page<AnaliseMateriaResponse> materias(@RequestBody ConsultaRequest request) {
-        return service.materias(request);
+    public Page<AnaliseMateriaResponse> materias(
+            @ParameterObject @Valid ConsultaRequest consulta) {
+        return service.materias(consulta);
     }
 
     @GetMapping("/por-tema")
@@ -50,8 +52,8 @@ public class AnaliseMateriaController {
                     + "unico tema, o agregado descreve aquele recorte, nao a cobertura em "
                     + "geral. Materias sem tema atribuido aparecem como grupo proprio. "
                     + "Uma materia com varios temas conta em cada um.")
-    public AnalisePorTemaResponse porTema(@RequestBody ConsultaRequest request) {
-        return service.porTema(request);
+    public AnalisePorTemaResponse porTema(@ParameterObject @Valid ConsultaRequest consulta) {
+        return service.porTema(consulta);
     }
 
     @GetMapping("/panorama")
@@ -60,7 +62,7 @@ public class AnaliseMateriaController {
                     + "da janela, sempre na versao mais recente, com temas e fontes ja "
                     + "resolvidas para veiculo e link. Sem 'janela', responde o mes mais "
                     + "recente que tiver panorama.")
-    public PanoramaResponse panorama(@RequestBody ConsultaRequest request) {
-        return service.panorama(request);
+    public PanoramaResponse panorama(@ParameterObject @Valid ConsultaRequest consulta) {
+        return service.panorama(consulta);
     }
 }

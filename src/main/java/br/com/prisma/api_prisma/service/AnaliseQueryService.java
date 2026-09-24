@@ -30,7 +30,7 @@ import br.com.prisma.api_prisma.repository.ClassificacaoRepository.ContagemPorMi
  * O que a imprensa disse: sentimento agregado e os paragrafos que o sustentam.
  *
  * <p>Toda consulta e sobre um {@link Alvo} -- politico ou partido -- resolvido
- * a partir do corpo da requisicao.
+ * a partir dos parametros da consulta.
  */
 @Service
 @Transactional(readOnly = true)

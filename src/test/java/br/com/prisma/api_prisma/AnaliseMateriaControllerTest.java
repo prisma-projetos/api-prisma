@@ -14,7 +14,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,8 +48,7 @@ class AnaliseMateriaControllerTest {
     @Test
     void exigeChaveDeApi() throws Exception {
         mockMvc.perform(get("/api/analise/materias")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nrPartido\":13}"))
+                        .param("nrPartido", "13"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -68,8 +66,7 @@ class AnaliseMateriaControllerTest {
 
         mockMvc.perform(get("/api/analise/materias")
                         .header(KEY_HEADER, KEY)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nrPartido\":13}"))
+                        .param("nrPartido", "13"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].itemId").value("art_4242__partido_13"))
                 .andExpect(jsonPath("$.content[0].temas[0]").value("saude"))
@@ -89,8 +86,7 @@ class AnaliseMateriaControllerTest {
 
         mockMvc.perform(get("/api/analise/por-tema")
                         .header(KEY_HEADER, KEY)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nrPartido\":13}"))
+                        .param("nrPartido", "13"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalMaterias").value(10))
                 .andExpect(jsonPath("$.semTema").value(4))
@@ -110,8 +106,8 @@ class AnaliseMateriaControllerTest {
 
         mockMvc.perform(get("/api/analise/panorama")
                         .header(KEY_HEADER, KEY)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nrPartido\":13,\"janela\":\"2026-08\"}"))
+                        .param("nrPartido", "13")
+                        .param("janela", "2026-08"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.janela").value("2026-08"))
                 .andExpect(jsonPath("$.eixos[0].eixo").value("negativo"))
@@ -130,8 +126,8 @@ class AnaliseMateriaControllerTest {
 
         mockMvc.perform(get("/api/analise/materias")
                         .header(KEY_HEADER, KEY)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"tituloEleitoral\":\"123456789012\",\"nrPartido\":13}"))
+                        .param("tituloEleitoral", "123456789012")
+                        .param("nrPartido", "13"))
                 .andExpect(status().isBadRequest());
     }
 }
