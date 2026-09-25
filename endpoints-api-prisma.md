@@ -55,13 +55,14 @@ Consulta de candidatos e do histórico de candidaturas. A base atual carrega ape
 
 ### `GET /api/politicos` — Lista políticos (por candidatura) · paginado
 
-Busca por nome ou nome social, paginada. **Um item por candidatura**, não por pessoa: sem `anoEleicao`, um político com candidaturas em mais de uma eleição aparece repetido, uma vez por eleição. Já vem pronto para montar o mostruário de cards clicáveis da página do partido: só `tituloEleitoral`, `nome` e `urlFoto`.
+Busca por nome ou nome social, paginada. **Um item por candidatura**, não por pessoa: sem `anoEleicao`, um político com candidaturas em mais de uma eleição aparece repetido, uma vez por eleição. Já vem pronto para montar o mostruário de cards clicáveis da página do partido: `tituloEleitoral`, `nome`, `cargo` e `urlFoto`.
 
 | Parâmetro | Tipo | Obrig. | Descrição |
 |---|---|---|---|
 | `q` | string | Não | Trecho do nome ou nome social (case-insensitive) |
 | `nrPartido` | integer | Não | Filtra por número de legenda do partido, ex. 22 |
 | `anoEleicao` | integer | Não | Filtra por ano da eleição, ex. 2026 |
+| `cargo` | string | Não | Filtra pelo cargo da candidatura (case-insensitive), ex. `PRESIDENTE`, `SENADOR`, `DEPUTADO FEDERAL` |
 | `pagina` | integer | Não | Página, base 0. Padrão: 0 |
 | `tamanho` | integer | Não | Itens por página, max 100. Padrão: 20 |
 
@@ -70,6 +71,7 @@ curl -G -H "X-API-KEY: SUA_CHAVE_AQUI" \
   "http://localhost:8080/api/politicos" \
   --data-urlencode "nrPartido=22" \
   --data-urlencode "anoEleicao=2026" \
+  --data-urlencode "cargo=DEPUTADO FEDERAL" \
   --data-urlencode "pagina=0" \
   --data-urlencode "tamanho=20"
 ```
@@ -80,11 +82,13 @@ curl -G -H "X-API-KEY: SUA_CHAVE_AQUI" \
     {
       "tituloEleitoral": "062567640809",
       "nome": "ABIMAEL DOS SANTOS PEREIRA LEAL",
+      "cargo": "DEPUTADO FEDERAL",
       "urlFoto": "https://api-minio.ajvale.com.br/2026/fotosCandidatos/PE/FPE170002539230_div.jpg"
     },
     {
       "tituloEleitoral": "003013841872",
       "nome": "ABMAEL BORGES DA SILVEIRA",
+      "cargo": "DEPUTADO FEDERAL",
       "urlFoto": "https://api-minio.ajvale.com.br/2026/fotosCandidatos/MT/FMT110002539002_div.jpg"
     }
   ],
@@ -99,7 +103,7 @@ curl -G -H "X-API-KEY: SUA_CHAVE_AQUI" \
 }
 ```
 
-> Uso típico no frontend: consumir esta lista para desenhar o mostruário de fotos da página do partido (`urlFoto` como `src` da imagem, `nome` embaixo, `tituloEleitoral` guardado para o clique) e paginar conforme o usuário rola/pede mais.
+> Uso típico no frontend: consumir esta lista para desenhar o mostruário de fotos da página do partido (`urlFoto` como `src` da imagem, `nome` embaixo, `cargo` para categorizar/filtrar os cards, `tituloEleitoral` guardado para o clique) e paginar conforme o usuário rola/pede mais.
 
 ### `GET /api/politicos/detalhe` — Detalha um político
 

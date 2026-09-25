@@ -31,7 +31,7 @@ public class PoliticoController {
                     + "candidatura (nao por pessoa): sem anoEleicao, um mesmo "
                     + "politico aparece de novo por eleicao em que concorreu. "
                     + "Resumido para a pagina do partido (tituloEleitoral, nome, "
-                    + "urlFoto); dados completos ficam em /detalhe.")
+                    + "cargo, urlFoto); dados completos ficam em /detalhe.")
     public Page<CandidatoResumoResponse> listar(
             @Parameter(description = "Trecho do nome") @RequestParam(required = false) String q,
             @Parameter(description = "Filtra por numero de legenda do partido")
@@ -40,9 +40,13 @@ public class PoliticoController {
                     + "isso, politicos com mais de uma candidatura aparecem "
                     + "repetidos, uma vez por eleicao")
             @RequestParam(required = false) Integer anoEleicao,
+            @Parameter(description = "Filtra pelo cargo da candidatura, ex. "
+                    + "PRESIDENTE, SENADOR, DEPUTADO FEDERAL. Sem diferenciar "
+                    + "maiusculas de minusculas", example = "PRESIDENTE")
+            @RequestParam(required = false) String cargo,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "20") int tamanho) {
-        return service.listarPoliticos(q, nrPartido, anoEleicao, pagina, tamanho);
+        return service.listarPoliticos(q, nrPartido, anoEleicao, cargo, pagina, tamanho);
     }
 
     @GetMapping("/detalhe")

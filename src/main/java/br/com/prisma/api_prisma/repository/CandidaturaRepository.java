@@ -24,9 +24,10 @@ public interface CandidaturaRepository extends JpaRepository<Candidatura, Long> 
 
     /**
      * Lista candidaturas por nome/nome social do politico, com filtros opcionais
-     * de partido e ano de eleicao. {@code nrPartido}/{@code anoEleicao} nulos
-     * casam com tudo -- sem o ano, um politico com candidaturas em mais de uma
-     * eleicao aparece uma vez por eleicao.
+     * de partido, ano de eleicao e cargo. {@code nrPartido}/{@code anoEleicao}
+     * nulos casam com tudo -- sem o ano, um politico com candidaturas em mais
+     * de uma eleicao aparece uma vez por eleicao. {@code cargo} e comparado
+     * sem diferenciar maiusculas/minusculas, como o resto da busca.
      */
     @Query("""
             select c from Candidatura c
@@ -37,10 +38,12 @@ public interface CandidaturaRepository extends JpaRepository<Candidatura, Long> 
                or lower(coalesce(p.nomeSocial, '')) like :pattern)
               and (:nrPartido is null or c.partido.numero = :nrPartido)
               and (:anoEleicao is null or e.ano = :anoEleicao)
+              and (:cargo is null or lower(c.cargo) = :cargo)
             order by p.nome
             """)
     Page<Candidatura> buscar(@Param("pattern") String pattern,
                               @Param("nrPartido") Integer nrPartido,
                               @Param("anoEleicao") Integer anoEleicao,
+                              @Param("cargo") String cargo,
                               Pageable pageable);
 }

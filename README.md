@@ -102,7 +102,7 @@ O identificador da entidade vai **no corpo da requisição**, não no path. As c
 
 | Método | Rota | O que responde |
 |---|---|---|
-| `GET` | `/api/politicos` | Lista políticos (`?q=`, `?pagina=`, `?tamanho=`) |
+| `GET` | `/api/politicos` | Lista políticos por candidatura (`?q=`, `?nrPartido=`, `?anoEleicao=`, `?cargo=`, `?pagina=`, `?tamanho=`) |
 | `GET` | `/api/politicos/detalhe` | Político e histórico de candidaturas |
 | `GET` | `/api/partidos` | Lista partidos (`?q=`) |
 | `GET` | `/api/partidos/detalhe` | Detalhe de um partido |

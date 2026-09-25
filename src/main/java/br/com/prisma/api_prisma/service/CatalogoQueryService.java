@@ -47,17 +47,22 @@ public class CatalogoQueryService {
 
     /**
      * Lista candidaturas (nao pessoas), resumidas para a pagina do partido:
-     * so titulo, nome e urlFoto. Dados completos ficam em /detalhe.
-     * {@code nrPartido}/{@code anoEleicao} nulos nao filtram. Sem
-     * {@code anoEleicao}, um politico com candidaturas em varias eleicoes
+     * titulo, nome, cargo e urlFoto. Dados completos ficam em /detalhe.
+     * {@code nrPartido}/{@code anoEleicao}/{@code cargo} nulos nao filtram.
+     * Sem {@code anoEleicao}, um politico com candidaturas em varias eleicoes
      * aparece uma vez por eleicao.
      */
     public Page<CandidatoResumoResponse> listarPoliticos(String termo, Integer nrPartido,
-                                                           Integer anoEleicao,
+                                                           Integer anoEleicao, String cargo,
                                                            Integer pagina, Integer tamanho) {
         return candidaturas.buscar(padraoDeBusca(termo), nrPartido, anoEleicao,
-                        paginacao(pagina, tamanho))
+                        normalizarCargo(cargo), paginacao(pagina, tamanho))
                 .map(CandidatoResumoResponse::from);
+    }
+
+    /** Nulo/vazio desliga o filtro; o resto vira minusculo para casar com o repositorio. */
+    private static String normalizarCargo(String cargo) {
+        return cargo == null || cargo.isBlank() ? null : cargo.trim().toLowerCase();
     }
 
     public List<PartidoResponse> listarPartidos(String termo) {
