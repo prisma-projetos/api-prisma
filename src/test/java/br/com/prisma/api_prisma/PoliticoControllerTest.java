@@ -47,7 +47,7 @@ class PoliticoControllerTest {
                 "122418060191", "LUIZ INÁCIO LULA DA SILVA", "PRESIDENTE",
                 "https://exemplo.com/foto.jpg");
 
-        when(service.listarPoliticos(isNull(), eq(13), isNull(), eq("PRESIDENTE"), any(), any()))
+        when(service.listarPoliticos(isNull(), eq(13), isNull(), eq("PRESIDENTE"), isNull(), any(), any()))
                 .thenReturn(new PageImpl<>(List.of(candidato), PageRequest.of(0, 20), 1));
 
         mockMvc.perform(get("/api/politicos")
@@ -62,12 +62,30 @@ class PoliticoControllerTest {
     /** Sem 'cargo' na query string, o parametro chega nulo ao servico -- filtro desligado. */
     @Test
     void listaSemCargoNaoFiltra() throws Exception {
-        when(service.listarPoliticos(any(), any(), any(), isNull(), any(), any()))
+        when(service.listarPoliticos(any(), any(), any(), isNull(), any(), any(), any()))
                 .thenReturn(new PageImpl<>(List.of(), PageRequest.of(0, 20), 0));
 
         mockMvc.perform(get("/api/politicos")
                         .header(KEY_HEADER, KEY))
                 .andExpect(status().isOk());
+    }
+
+    /** A UF chega ao servico como recebida; a normalizacao para maiusculo fica no servico. */
+    @Test
+    void listaFiltraPorUf() throws Exception {
+        var candidato = new CandidatoResumoResponse(
+                "013637562380", "ADAILTON ANTUNES FERREIRA", "GOVERNADOR",
+                "https://exemplo.com/foto.jpg");
+
+        when(service.listarPoliticos(isNull(), isNull(), eq(2026), isNull(), eq("ro"), any(), any()))
+                .thenReturn(new PageImpl<>(List.of(candidato), PageRequest.of(0, 20), 1));
+
+        mockMvc.perform(get("/api/politicos")
+                        .header(KEY_HEADER, KEY)
+                        .param("anoEleicao", "2026")
+                        .param("uf", "ro"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].tituloEleitoral").value("013637562380"));
     }
 
     @Test

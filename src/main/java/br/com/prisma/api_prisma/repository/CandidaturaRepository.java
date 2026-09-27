@@ -39,11 +39,13 @@ public interface CandidaturaRepository extends JpaRepository<Candidatura, Long> 
               and (:nrPartido is null or c.partido.numero = :nrPartido)
               and (:anoEleicao is null or e.ano = :anoEleicao)
               and (:cargo is null or lower(c.cargo) = :cargo)
+              and (:uf is null or c.uf = :uf)
             order by p.nome
             """)
     Page<Candidatura> buscar(@Param("pattern") String pattern,
                               @Param("nrPartido") Integer nrPartido,
                               @Param("anoEleicao") Integer anoEleicao,
                               @Param("cargo") String cargo,
+                              @Param("uf") String uf,
                               Pageable pageable);
 }

@@ -44,9 +44,12 @@ public class PoliticoController {
                     + "PRESIDENTE, SENADOR, DEPUTADO FEDERAL. Sem diferenciar "
                     + "maiusculas de minusculas", example = "PRESIDENTE")
             @RequestParam(required = false) String cargo,
+            @Parameter(description = "Filtra pela UF da candidatura, ex. RO. Sem "
+                    + "diferenciar maiusculas de minusculas", example = "RO")
+            @RequestParam(required = false) String uf,
             @RequestParam(defaultValue = "0") int pagina,
             @RequestParam(defaultValue = "20") int tamanho) {
-        return service.listarPoliticos(q, nrPartido, anoEleicao, cargo, pagina, tamanho);
+        return service.listarPoliticos(q, nrPartido, anoEleicao, cargo, uf, pagina, tamanho);
     }
 
     @GetMapping("/detalhe")
