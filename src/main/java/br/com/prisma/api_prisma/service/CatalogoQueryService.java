@@ -54,15 +54,21 @@ public class CatalogoQueryService {
      */
     public Page<CandidatoResumoResponse> listarPoliticos(String termo, Integer nrPartido,
                                                            Integer anoEleicao, String cargo,
+                                                           String uf,
                                                            Integer pagina, Integer tamanho) {
         return candidaturas.buscar(padraoDeBusca(termo), nrPartido, anoEleicao,
-                        normalizarCargo(cargo), paginacao(pagina, tamanho))
+                        normalizarCargo(cargo), normalizarUf(uf), paginacao(pagina, tamanho))
                 .map(CandidatoResumoResponse::from);
     }
 
     /** Nulo/vazio desliga o filtro; o resto vira minusculo para casar com o repositorio. */
     private static String normalizarCargo(String cargo) {
         return cargo == null || cargo.isBlank() ? null : cargo.trim().toLowerCase();
+    }
+
+    /** Nulo/vazio desliga o filtro; o resto vira maiusculo, como a coluna sg_uf. */
+    private static String normalizarUf(String uf) {
+        return uf == null || uf.isBlank() ? null : uf.trim().toUpperCase();
     }
 
     public List<PartidoResponse> listarPartidos(String termo) {
