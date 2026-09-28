@@ -55,7 +55,7 @@ Consulta de candidatos e do histórico de candidaturas. A base atual carrega ape
 
 ### `GET /api/politicos` — Lista políticos (por candidatura) · paginado
 
-Busca por nome ou nome social, paginada. **Um item por candidatura**, não por pessoa: sem `anoEleicao`, um político com candidaturas em mais de uma eleição aparece repetido, uma vez por eleição. Já vem pronto para montar o mostruário de cards clicáveis da página do partido: `tituloEleitoral`, `nome`, `cargo` e `urlFoto`.
+Busca por nome ou nome social, paginada. **Um item por candidatura**, não por pessoa: sem `anoEleicao`, um político com candidaturas em mais de uma eleição aparece repetido, uma vez por eleição. Já vem pronto para montar o mostruário de cards clicáveis da página do partido: `tituloEleitoral`, `nome`, `cargo`, `urlFoto`, `nrPartido` e `siglaPartido`. O partido é o **da candidatura** (não a filiação atual do político); `nrPartido` e `siglaPartido` vêm `null` se a candidatura não tiver partido.
 
 | Parâmetro | Tipo | Obrig. | Descrição |
 |---|---|---|---|
@@ -83,13 +83,17 @@ curl -G -H "X-API-KEY: SUA_CHAVE_AQUI" \
       "tituloEleitoral": "062567640809",
       "nome": "ABIMAEL DOS SANTOS PEREIRA LEAL",
       "cargo": "DEPUTADO FEDERAL",
-      "urlFoto": "https://api-minio.ajvale.com.br/2026/fotosCandidatos/PE/FPE170002539230_div.jpg"
+      "urlFoto": "https://api-minio.ajvale.com.br/2026/fotosCandidatos/PE/FPE170002539230_div.jpg",
+      "nrPartido": 22,
+      "siglaPartido": "PL"
     },
     {
       "tituloEleitoral": "003013841872",
       "nome": "ABMAEL BORGES DA SILVEIRA",
       "cargo": "DEPUTADO FEDERAL",
-      "urlFoto": "https://api-minio.ajvale.com.br/2026/fotosCandidatos/MT/FMT110002539002_div.jpg"
+      "urlFoto": "https://api-minio.ajvale.com.br/2026/fotosCandidatos/MT/FMT110002539002_div.jpg",
+      "nrPartido": 22,
+      "siglaPartido": "PL"
     }
   ],
   "empty": false,

@@ -47,7 +47,8 @@ public class CatalogoQueryService {
 
     /**
      * Lista candidaturas (nao pessoas), resumidas para a pagina do partido:
-     * titulo, nome, cargo e urlFoto. Dados completos ficam em /detalhe.
+     * titulo, nome, cargo, urlFoto e o partido da candidatura. Dados completos
+     * ficam em /detalhe.
      * {@code nrPartido}/{@code anoEleicao}/{@code cargo} nulos nao filtram.
      * Sem {@code anoEleicao}, um politico com candidaturas em varias eleicoes
      * aparece uma vez por eleicao.

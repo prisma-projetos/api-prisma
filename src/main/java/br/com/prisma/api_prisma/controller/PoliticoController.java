@@ -30,8 +30,9 @@ public class PoliticoController {
             description = "Busca por nome ou nome social, paginada. Um item por "
                     + "candidatura (nao por pessoa): sem anoEleicao, um mesmo "
                     + "politico aparece de novo por eleicao em que concorreu. "
-                    + "Resumido para a pagina do partido (tituloEleitoral, nome, "
-                    + "cargo, urlFoto); dados completos ficam em /detalhe.")
+                    + "Resumido para a listagem (tituloEleitoral, nome, cargo, "
+                    + "urlFoto, nrPartido, siglaPartido -- o partido e o da "
+                    + "candidatura); dados completos ficam em /detalhe.")
     public Page<CandidatoResumoResponse> listar(
             @Parameter(description = "Trecho do nome") @RequestParam(required = false) String q,
             @Parameter(description = "Filtra por numero de legenda do partido")

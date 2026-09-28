@@ -27,7 +27,9 @@ public interface CandidaturaRepository extends JpaRepository<Candidatura, Long> 
      * de partido, ano de eleicao e cargo. {@code nrPartido}/{@code anoEleicao}
      * nulos casam com tudo -- sem o ano, um politico com candidaturas em mais
      * de uma eleicao aparece uma vez por eleicao. {@code cargo} e comparado
-     * sem diferenciar maiusculas/minusculas, como o resto da busca.
+     * sem diferenciar maiusculas/minusculas, como o resto da busca. O partido
+     * vem no mesmo select (fetch join) porque a listagem expoe numero e sigla
+     * -- sem ele, seria uma consulta por item.
      */
     @Query("""
             select c from Candidatura c
