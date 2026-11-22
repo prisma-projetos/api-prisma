@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔌 api-prisma
+# api-prisma
 
 **API REST somente leitura do PRISMA**: expõe políticos, partidos, candidaturas e a análise de sentimento da cobertura jornalística (parágrafos, matérias, temas e panoramas), sempre com proveniência e link para a fonte.
 
@@ -17,7 +17,7 @@
 
 ---
 
-## 📍 Onde este módulo fica no PRISMA
+## Onde este módulo fica no PRISMA
 
 ```
 scrapping-prisma ──▶ classifier-prisma ──▶ analyser-prisma ──▶ System DB ──▶ [ api-prisma ] ──▶ app-prisma
@@ -26,20 +26,20 @@ scrapping-prisma ──▶ classifier-prisma ──▶ analyser-prisma ──▶
 
 A API **só lê**. Quem escreve no System DB são o `classifier-prisma` (classificações por parágrafo) e o `analyser-prisma` (resumos e panoramas). Por isso todos os endpoints são `GET`.
 
-## 📑 Sumário
+## Sumário
 
-- [Stack](#-stack)
-- [Modelo de dados](#-modelo-de-dados)
-- [Endpoints](#-endpoints)
-- [Segurança](#-segurança)
-- [Como rodar](#-como-rodar)
-- [Profiles e configuração](#-profiles-e-configuração)
-- [Docker](#-docker)
-- [Testes](#-testes)
-- [CI/CD](#-cicd)
-- [Repositórios do PRISMA](#-repositórios-do-prisma)
+- [Stack](#stack)
+- [Modelo de dados](#modelo-de-dados)
+- [Endpoints](#endpoints)
+- [Segurança](#segurança)
+- [Como rodar](#como-rodar)
+- [Profiles e configuração](#profiles-e-configuração)
+- [Docker](#docker)
+- [Testes](#testes)
+- [CI/CD](#cicd)
+- [Repositórios do PRISMA](#repositórios-do-prisma)
 
-## 🧰 Stack
+## Stack
 
 | Tecnologia | Versão |
 |---|---|
@@ -74,7 +74,7 @@ src/main/java/br/com/prisma/api_prisma/
 
 </details>
 
-## 🗄 Modelo de dados
+## Modelo de dados
 
 Os dados são **ancorados no TSE**: um político é identificado pelo `nr_titulo_eleitoral_candidato` e um partido pelo `nr_partido`. Cargo, UF e filiação ficam na **candidatura**, porque mudam a cada eleição.
 
@@ -94,7 +94,7 @@ Pontos de atenção:
 - `id_artigo_scrape` aponta para o banco do scraper, que é externo e não tem FK.
 - Fotos de candidatos e logos de partidos são URLs montadas para o **MinIO** (`MinioUrls`).
 
-## 📡 Endpoints
+## Endpoints
 
 Todos são `GET`, exigem `X-API-KEY` e recebem filtros por **query string**. O guia completo, com exemplos de resposta, está em [`endpoints-api-prisma.md`](endpoints-api-prisma.md).
 
@@ -134,7 +134,7 @@ curl -G -H "X-API-KEY: 123456" http://localhost:8080/api/analise/mencoes \
 
 </details>
 
-## 🔐 Segurança
+## Segurança
 
 - Header **`X-API-KEY`** obrigatório em `/api/**`. Sem ele, a resposta é `401`. O Swagger (`/swagger-ui/**`, `/v3/api-docs/**`) é público e fica **desligado em `prod`**.
 - **A chave é validada no boot**, e a aplicação não sobe se ela estiver ausente ou vazia. Fora do profile `local`, também não sobe com menos de 16 caracteres.
@@ -145,7 +145,7 @@ curl -G -H "X-API-KEY: 123456" http://localhost:8080/api/analise/mencoes \
 python -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
 
-## 🚀 Como rodar
+## Como rodar
 
 ```bash
 git clone git@github.com:prisma-projetos/api-prisma.git
@@ -171,19 +171,19 @@ set -a; source .env.local; set +a
 
 </details>
 
-## ⚙ Profiles e configuração
+## Profiles e configuração
 
 | Profile | Banco | `ddl-auto` | Swagger | Chave |
 |---|---|---|---|---|
-| `local` (padrão) | Docker Compose em `localhost:5432` | `update` ⚠ só com banco descartável | ✅ | `123456` fixa |
-| `dev` | `DB_URL` / `DB_USER` / `DB_PASS` | `validate` | ✅ | `API_SECURITY_KEY` |
-| `prod` | Variáveis de ambiente | `validate` | ❌ | `API_SECURITY_KEY` |
+| `local` (padrão) | Docker Compose em `localhost:5432` | `update` só com banco descartável | Sim | `123456` fixa |
+| `dev` | `DB_URL` / `DB_USER` / `DB_PASS` | `validate` | Sim | `API_SECURITY_KEY` |
+| `prod` | Variáveis de ambiente | `validate` | Não | `API_SECURITY_KEY` |
 
 O profile é escolhido com `SPRING_PROFILES_ACTIVE`, que tem precedência sobre o `application.properties`.
 
 > Em `dev`/`prod` (`validate`), a aplicação **não sobe** se as tabelas do analyser ainda não existirem. Aplique antes `analyser-prisma/migrations/001_analyser.sql`.
 
-## 🐳 Docker
+## Docker
 
 Build multi-stage: `eclipse-temurin:25-jdk` (com `dependency:go-offline` para aproveitar o cache) gera o artefato, e `eclipse-temurin:25-jre` executa. `TZ=America/Fortaleza`, porta `8080`.
 
@@ -197,7 +197,7 @@ docker run --rm -p 8080:8080 \
   api-prisma
 ```
 
-## 🧪 Testes
+## Testes
 
 ```bash
 ./mvnw test
@@ -205,18 +205,18 @@ docker run --rm -p 8080:8080 \
 
 Cobre os controllers (`Politico`, `Analise`, `AnaliseMateria`), o `ApiKeyFilter`, o `AnaliseItemRepository` e os serviços de consulta (`CatalogoQueryService`, `AnaliseMateriaQueryService`).
 
-## 🔁 CI/CD
+## CI/CD
 
 `.gitea/workflows/ci-cd.yaml`: em push para `main`/`develop`, faz build da imagem → atualiza os manifestos → sincroniza no **ArgoCD**. Em produção, `SPRING_PROFILES_ACTIVE=prod` e as credenciais vêm de *secrets* do cluster.
 
-## 🧭 Repositórios do PRISMA
+## Repositórios do PRISMA
 
 | Repositório | Papel |
 |---|---|
 | [`.github`](https://github.com/prisma-projetos) | Página da organização |
-| [`scrapping-prisma`](https://github.com/prisma-projetos/scrapping-prisma) | 📰 Coleta de notícias |
-| [`classifier-prisma`](https://github.com/prisma-projetos/classifier-prisma) | 🏷 Identificação de entidades e classificação do teor |
-| [`analyser-prisma`](https://github.com/prisma-projetos/analyser-prisma) | 🧠 Resumos e panoramas com LLM |
-| **`api-prisma`** | 🔌 API REST somente leitura *(este)* |
-| [`app-prisma`](https://github.com/prisma-projetos/app-prisma) | 🖥 Interface web |
-| [`experiments-prisma`](https://github.com/prisma-projetos/experiments-prisma) | 🔬 Documentação, ADRs e experimentos do artigo |
+| [`scrapping-prisma`](https://github.com/prisma-projetos/scrapping-prisma) | Coleta de notícias |
+| [`classifier-prisma`](https://github.com/prisma-projetos/classifier-prisma) | Identificação de entidades e classificação do teor |
+| [`analyser-prisma`](https://github.com/prisma-projetos/analyser-prisma) | Resumos e panoramas com LLM |
+| **`api-prisma`** | API REST somente leitura *(este)* |
+| [`app-prisma`](https://github.com/prisma-projetos/app-prisma) | Interface web |
+| [`experiments-prisma`](https://github.com/prisma-projetos/experiments-prisma) | Documentação, ADRs e experimentos do artigo |
