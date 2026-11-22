@@ -21,7 +21,7 @@ import br.com.prisma.api_prisma.dto.SentimentoPorMidiaResponse;
 import br.com.prisma.api_prisma.dto.SentimentoPorMidiaResponse.MidiaSentimento;
 import br.com.prisma.api_prisma.dto.SentimentoResumoResponse;
 import br.com.prisma.api_prisma.dto.SentimentoResumoResponse.ContagemSentimento;
-import br.com.prisma.api_prisma.dto.SentimentoResumoResponse.Proveniencia;
+import br.com.prisma.api_prisma.dto.Proveniencia;
 import br.com.prisma.api_prisma.model.Classificacao;
 import br.com.prisma.api_prisma.repository.ClassificacaoRepository;
 import br.com.prisma.api_prisma.repository.ClassificacaoRepository.ContagemPorMidia;
@@ -30,7 +30,7 @@ import br.com.prisma.api_prisma.repository.ClassificacaoRepository.ContagemPorMi
  * O que a imprensa disse: sentimento agregado e os paragrafos que o sustentam.
  *
  * <p>Toda consulta e sobre um {@link Alvo} -- politico ou partido -- resolvido
- * a partir do corpo da requisicao.
+ * a partir dos parametros da consulta.
  */
 @Service
 @Transactional(readOnly = true)
@@ -153,18 +153,7 @@ public class AnaliseQueryService {
 
     /** Exige exatamente um identificador: politico OU partido. */
     private Alvo resolverAlvo(ConsultaRequest request) {
-        boolean temPolitico = request.tituloEleitoral() != null
-                && !request.tituloEleitoral().isBlank();
-        boolean temPartido = request.nrPartido() != null;
-
-        if (temPolitico == temPartido) {
-            throw new IllegalArgumentException(
-                    "Informe 'tituloEleitoral' (politico) ou 'nrPartido' (partido) -- "
-                            + "exatamente um dos dois.");
-        }
-        return temPolitico
-                ? Alvo.de(catalogo.carregarPolitico(request.tituloEleitoral()))
-                : Alvo.de(catalogo.carregarPartido(request.nrPartido()));
+        return Alvo.resolver(request, catalogo);
     }
 
     private static String normalizarSentimento(String sentimento) {

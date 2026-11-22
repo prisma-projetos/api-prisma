@@ -32,7 +32,4 @@ public record SentimentoResumoResponse(
             @Schema(description = "Score medio de confianca do modelo") Double scoreMedio) {
     }
 
-    @Schema(description = "Metodo e versao do pipeline que geraram as classificacoes")
-    public record Proveniencia(String metodo, String pipelineVersion, long total) {
-    }
 }

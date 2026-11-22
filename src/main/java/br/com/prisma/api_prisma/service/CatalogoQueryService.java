@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.com.prisma.api_prisma.dto.CandidaturaResponse;
+import br.com.prisma.api_prisma.dto.CandidatoResumoResponse;
 import br.com.prisma.api_prisma.dto.PartidoResponse;
 import br.com.prisma.api_prisma.dto.PoliticoDetalheResponse;
 import br.com.prisma.api_prisma.dto.PoliticoResponse;
@@ -44,9 +45,31 @@ public class CatalogoQueryService {
         this.candidaturas = candidaturas;
     }
 
-    public Page<PoliticoResponse> listarPoliticos(String termo, Integer pagina, Integer tamanho) {
-        return politicos.buscarPorNome(padraoDeBusca(termo), paginacao(pagina, tamanho))
-                .map(PoliticoResponse::from);
+    /**
+     * Lista candidaturas (nao pessoas), resumidas para a pagina do partido:
+     * titulo, nome, cargo, urlFoto e o partido da candidatura. Dados completos
+     * ficam em /detalhe.
+     * {@code nrPartido}/{@code anoEleicao}/{@code cargo} nulos nao filtram.
+     * Sem {@code anoEleicao}, um politico com candidaturas em varias eleicoes
+     * aparece uma vez por eleicao.
+     */
+    public Page<CandidatoResumoResponse> listarPoliticos(String termo, Integer nrPartido,
+                                                           Integer anoEleicao, String cargo,
+                                                           String uf,
+                                                           Integer pagina, Integer tamanho) {
+        return candidaturas.buscar(padraoDeBusca(termo), nrPartido, anoEleicao,
+                        normalizarCargo(cargo), normalizarUf(uf), paginacao(pagina, tamanho))
+                .map(CandidatoResumoResponse::from);
+    }
+
+    /** Nulo/vazio desliga o filtro; o resto vira minusculo para casar com o repositorio. */
+    private static String normalizarCargo(String cargo) {
+        return cargo == null || cargo.isBlank() ? null : cargo.trim().toLowerCase();
+    }
+
+    /** Nulo/vazio desliga o filtro; o resto vira maiusculo, como a coluna sg_uf. */
+    private static String normalizarUf(String uf) {
+        return uf == null || uf.isBlank() ? null : uf.trim().toUpperCase();
     }
 
     public List<PartidoResponse> listarPartidos(String termo) {
